@@ -1,0 +1,36 @@
+inputs:
+  ECR_REPOSITORY:
+    description: "ECR_REPOSITORY"
+    required: true
+
+  BUILD_ARGS:
+    description: "BUILD_ARGS"
+    required: true
+
+  IMAGE_TAG:
+    description: "IMAGE_TAG"
+    required: true
+
+  NOW_TIME:
+    description: "NOW_TIME"
+    required: true
+
+runs:
+  using: "composite"
+  steps:
+    - name: Login to Amazon ECR
+      id: login-ecr
+      uses: aws-actions/amazon-ecr-login@v1
+
+    - name: Build, tag, and push image to Amazon ECR
+      shell: bash
+      env:
+        ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+        ECR_REPOSITORY: ${{ inputs.ECR_REPOSITORY }}
+        BUILD_ARGS: ${{ inputs.BUILD_ARGS }}
+        IMAGE_TAG: ${{ inputs.IMAGE_TAG }}
+      run: |
+        docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG ${{ inputs.BUILD_ARGS }} .
+        docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
+        docker tag $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG $ECR_REGISTRY/$ECR_REPOSITORY:${{ inputs.NOW_TIME }}
+        docker push $ECR_REGISTRY/$ECR_REPOSITORY:${{ inputs.NOW_TIME }}
