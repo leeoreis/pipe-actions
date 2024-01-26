@@ -30,7 +30,12 @@ runs:
         BUILD_ARGS: ${{ inputs.BUILD_ARGS }}
         IMAGE_TAG: ${{ inputs.IMAGE_TAG }}
       run: |
-        docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG ${{ inputs.BUILD_ARGS }} .
-        docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
-        docker tag $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG $ECR_REGISTRY/$ECR_REPOSITORY:${{ inputs.NOW_TIME }}
-        docker push $ECR_REGISTRY/$ECR_REPOSITORY:${{ inputs.NOW_TIME }}
+        aws ecr-public get-login-password --region us-east-1 | docker login --username AWS --password-stdin public.ecr.aws/a9i3h7l7
+        docker build -t catalogo-filmes .
+        docker tag catalogo-filmes:latest public.ecr.aws/a9i3h7l7/catalogo-filmes:latest
+        docker push public.ecr.aws/a9i3h7l7/catalogo-filmes:latest
+
+      # docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG ${{ inputs.BUILD_ARGS }} .
+      # docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
+      # docker tag $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG $ECR_REGISTRY/$ECR_REPOSITORY:${{ inputs.NOW_TIME }}
+      # docker push $ECR_REGISTRY/$ECR_REPOSITORY:${{ inputs.NOW_TIME }}
