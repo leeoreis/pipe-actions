@@ -1,24 +1,17 @@
-on:
-  workflow_call:
-    inputs:
-      AWS_ACCESS_KEY_ID:
-        required: true
-        type: string
-      AWS_SECRET_ACCESS_KEY:
-        required: true
-        type: string
-      AWS_REGION:
-        required: true
-        type: string
+inputs:
+  AWS_ACCESS_KEY_ID:
+    description: "AWS KEY ID"
+    required: true
+  AWS_SECRET_ACCESS_KEY:
+    description: "AWS SECRET KEY"
+    required: true
 
 runs:
   using: "composite"
   steps:
-    - name: Configure AWS Credentials
-      run: |
-        echo "AWS_ACCESS_KEY_ID=${{ github.event.inputs.AWS_ACCESS_KEY_ID }}" >> $GITHUB_ENV
-        echo "AWS_SECRET_ACCESS_KEY=${{ github.event.inputs.AWS_SECRET_ACCESS_KEY }}" >> $GITHUB_ENV
-        echo "AWS_REGION=${{ github.event.inputs.AWS_REGION }}" >> $GITHUB_ENV
-
-    - name: Configure AWS Credentials
-      uses: aws-actions/configure-aws-credentials@v2
+  - name: Configure AWS Credentials
+    uses: aws-actions/configure-aws-credentials@v2
+    with:
+      aws-access-key-id: ${{ inputs.AWS_ACCESS_KEY_ID }}
+      aws-secret-access-key: ${{ inputs.AWS_SECRET_ACCESS_KEY }}
+      aws-region: us-east-1
